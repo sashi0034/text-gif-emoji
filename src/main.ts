@@ -10,8 +10,8 @@ function main(){
         log4js.getLogger().error(err)
     });
 
-    new HorizontalAnimationTextCreator().create("こんにちは、世界さん", "#fff", "#222");
-    //processBotRoutine()
+    //new HorizontalAnimationTextCreator().create("こんにちは、世界さん", "#fff", "#222");
+    processBotRoutine()
 }
 
 
