@@ -1,7 +1,7 @@
 
 import {processBotRoutine} from "./processBotRoutine";
 import log4js from 'log4js'
-import { ImageTester } from "./content/imageTester";
+import { HorizontalAnimationTextCreator } from "./content/horizontalAnimationTextCreator";
 
 function main(){
     log4js.getLogger().level = "all"
@@ -10,7 +10,7 @@ function main(){
         log4js.getLogger().error(err)
     });
 
-    new ImageTester().test();
+    new HorizontalAnimationTextCreator().create("こんにちは、世界さん", "#fff", "#222");
     //processBotRoutine()
 }
 

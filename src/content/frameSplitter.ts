@@ -1,5 +1,5 @@
 import { DrewResult, TextToImage } from "./textToImage";
-import sharp from "sharp"
+import sharp, { OutputInfo } from "sharp"
 import { assureExistDirectory } from "../util/utilFunction";
 
 export class FrameSplitter{
@@ -10,17 +10,18 @@ export class FrameSplitter{
         assureExistDirectory(frameDirectory);
     }
 
-    public splitImageToFrames(textImage: TextToImage, result: DrewResult){
+    public async splitImageToFrames(textImage: TextToImage, result: DrewResult){
         const baseSize = textImage.baseSize;
         const numFrame = this.numFrame;
         const stepWidth = (result.drewWidth + baseSize) / (numFrame - 1);
 
-        const outputPathList = []
+        const outputPathList: string[] = []
+        let taskList: Promise<OutputInfo>[] = []
         for (let frameIndex=0; frameIndex<numFrame; ++frameIndex){
             const path = this.frameDirectory +"/" + frameIndex +".png"
             outputPathList.push(path)
 
-            sharp(textImage.outputPath)
+            const task = sharp(textImage.outputPath)
             .extract({
                 top: 0,
                 left: this.calcLeftOfFrame(frameIndex, stepWidth, baseSize, result.capacityWidth),
@@ -28,7 +29,11 @@ export class FrameSplitter{
                 height: baseSize
             })
             .toFile(path);
+            taskList.push(task)
         }
+
+        await Promise.all(taskList)
+        
         return outputPathList
     }
 

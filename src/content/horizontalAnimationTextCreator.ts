@@ -6,31 +6,33 @@ import {FrameSplitter} from "./frameSplitter"
 import Gm from "gm"
 
 
-export class ImageTester{
-    public test() {
+export class HorizontalAnimationTextCreator{
+    public async create(text: string, foreground: string, stroke: string) {
         const textImage = new TextToImage();
-        const result = textImage.draw("こんにちは世界", "#fff", "#222");
+        const result = textImage.draw(text, foreground, stroke);
         console.log(result.drewWidth)
 
         const numFrame = 64
-        const pathList = new FrameSplitter(numFrame, textImage.outputDirectory + "/frame").splitImageToFrames(textImage, result)
+        const pathList = await new FrameSplitter(numFrame, textImage.outputDirectory + "/frame").splitImageToFrames(textImage, result)
 
         const gm = Gm(textImage.baseSize, textImage.baseSize)
 
-        this.combinePngIntoGif(pathList, gm, textImage);
+        return this.combinePngIntoGif(pathList, gm, textImage);
     }
 
     private combinePngIntoGif(pathList: string[], gm: Gm.State, textImage: TextToImage) {
+        const outputPath = textImage.outputDirectory + "/output.gif";
         for (const path of pathList) {
             gm.in(path).dispose("Background");
         }
         gm.delay(15)
             .resize(textImage.baseSize, textImage.baseSize)
-            .write(textImage.outputDirectory + "/output.gif", function (err) {
+            .write(outputPath, function (err) {
                 if (err)
                     throw err;
                 console.log("animated.gif created");
             });
+        return outputPath;
     }
 }
 
