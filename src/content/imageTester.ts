@@ -1,42 +1,36 @@
 
-import { Canvas, createCanvas, registerFont } from "canvas";
 import fs from "fs";
+import { TextToImage } from "./textToImage";
+import sharp from "sharp"
+import {FrameSplitter} from "./frameSplitter"
+import Gm from "gm"
 
 
 export class ImageTester{
     public test() {
-        registerFont("./rsc/Mplus2-Regular.ttf", {family: "Mplus2-Regular"});
+        const textImage = new TextToImage();
+        const result = textImage.draw("こんにちは世界", "#fff", "#222");
+        console.log(result.drewWidth)
 
-        const text = 'hello world! こんにちは世界!'
+        const numFrame = 64
+        const pathList = new FrameSplitter(numFrame, textImage.outputDirectory + "/frame").splitImageToFrames(textImage, result)
 
-        const fontSize = 64;
+        const gm = Gm(textImage.baseSize, textImage.baseSize)
 
-        const canvas = createCanvas(fontSize * text.length, fontSize);
-
-        const context = canvas.getContext('2d');
-        
-        context.font = fontSize + `px "Mplus2-Regular"`;
-
-        context.lineWidth = 4;
-        context.strokeStyle = "#fff"
-        context.strokeText(text, 0, fontSize - fontSize/8);
-        
-        context.fillStyle = "#222";
-        context.fillText(text, 0, fontSize - fontSize/8);
-        
-        const width = context.measureText(text).width;
-        console.log("width: " + width);
-
-        const buffer = canvas.toBuffer("image/png")
-        this.assureExistDirectory("./output")
-        fs.writeFileSync("./output/test.png", buffer);
+        this.combinePngIntoGif(pathList, gm, textImage);
     }
 
-    private assureExistDirectory(path: string)
-    {
-        if (!fs.existsSync(path)) {
-            fs.mkdirSync(path);
+    private combinePngIntoGif(pathList: string[], gm: Gm.State, textImage: TextToImage) {
+        for (const path of pathList) {
+            gm.in(path).dispose("Background");
         }
+        gm.delay(15)
+            .resize(textImage.baseSize, textImage.baseSize)
+            .write(textImage.outputDirectory + "/output.gif", function (err) {
+                if (err)
+                    throw err;
+                console.log("animated.gif created");
+            });
     }
 }
 

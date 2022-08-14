@@ -1,4 +1,4 @@
-
+import fs from "fs";
 
 export function makeZeroPadding(num: number, length: number){
 	return ( Array(length).join('0') + num ).slice( -length );
@@ -20,5 +20,12 @@ export function sleep(time: number): Promise<void>{
 			resolve()
 		}, time)
 	})
+}
+
+export function assureExistDirectory(path: string)
+{
+	if (!fs.existsSync(path)) {
+		fs.mkdirSync(path);
+	}
 }
   
