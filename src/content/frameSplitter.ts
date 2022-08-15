@@ -15,12 +15,16 @@ export class FrameSplitter{
         const numFrame = this.numFrame;
         const stepWidth = (result.drewWidth + baseSize) / (numFrame - 1);
 
+        // キャッシュを消さないと、ファイルを変更してもキャッシュから読みこまれるため変更されない
+        sharp.cache({ files : 0 });
+
         const outputPathList: string[] = []
         let taskList: Promise<OutputInfo>[] = []
         for (let frameIndex=0; frameIndex<numFrame; ++frameIndex){
             const path = this.frameDirectory +"/" + frameIndex +".png"
             outputPathList.push(path)
 
+            
             const task = sharp(textImage.outputPath)
             .extract({
                 top: 0,

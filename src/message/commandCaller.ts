@@ -1,6 +1,6 @@
 import SlackActionWrapper from "../slackActionWrapper";
 import { ArgsQueue } from "./argsQueue";
-import { CommitCommand } from "./command/commitCommand";
+import { ScrollCmd } from "./commit/scrollCmd";
 
 
 export class CommandCaller{
@@ -16,7 +16,8 @@ export class CommandCaller{
         if (args.canPopArg()===false) return;
         const head = args.popArg();
 
-        if (head=="commit") new CommitCommand(this.slackAction).execute(args);
+        const scroll = new ScrollCmd(this.slackAction);
+        if (head==scroll.commandName) new ScrollCmd(this.slackAction).execute(args);
     }
 }
 

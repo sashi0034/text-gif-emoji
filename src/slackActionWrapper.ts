@@ -1,6 +1,7 @@
 import { App, Block, KnownBlock } from "@slack/bolt";
 import { stringify } from "querystring";
 import Config from "./config.json";
+import fs from "fs"
 
 export default
 
@@ -100,6 +101,16 @@ class SlackActionWrapper{
         for (let emoji in fetchedList.emoji){
             result.push(emoji);
         }
+
+        return result;
+    }
+
+    public async uploadFile(initialComment: string, fileName: string){
+        let result = await this.app.client.files.upload({
+            channels: this.config.targetChannel,
+            initial_comment: initialComment,
+            file: fs.createReadStream(fileName)
+        });
 
         return result;
     }

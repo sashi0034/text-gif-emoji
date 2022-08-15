@@ -1,7 +1,7 @@
 import { App } from "@slack/bolt";
 
 export default
-class CommandNaming{
+class SlashCommandNaming{
     public constructor(
         private readonly botName: string
     ){}

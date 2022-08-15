@@ -2,7 +2,7 @@ import { App, GenericMessageEvent } from "@slack/bolt";
 import Config from "./config.json";
 import SlackActionWrapper from "./slackActionWrapper";
 import log4js from "log4js";
-import CommandNaming from "./content/commandRegister";
+import CommandNaming from "./message/slashCommandNaming";
 import { CommandCaller } from "./message/commandCaller";
 
 
