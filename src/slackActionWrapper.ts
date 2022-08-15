@@ -114,6 +114,15 @@ class SlackActionWrapper{
 
         return result;
     }
+
+    public async addNewEmoji(emojiName: string, fileUrl: string){
+        let result = await this.app.client.admin.emoji.add({
+            token: this.config.botToken,
+            name: emojiName,
+            url: fileUrl
+        });
+        return result;
+    }
 }
 
 

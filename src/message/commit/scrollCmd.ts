@@ -14,12 +14,18 @@ class ScrollCmdOption{
 
 export class ScrollCmd implements ICommand{
     public readonly commandName: string = "scroll";
+    private urlOfLastSentGifFile: string = "";
+
+    public get urlOfLastSentGif(){
+        return this.urlOfLastSentGifFile;
+    }
 
     public constructor(
         private readonly slackAction: SlackActionWrapper
     ){}
 
     public async execute(args: ArgsQueue) {
+        if (args.canPopArg() === false)throw new ArgumentException("ファイル名を入力してください。");
         const drawingText = args.popArg();
 
         const option = this.extractOption(args);
@@ -27,7 +33,8 @@ export class ScrollCmd implements ICommand{
         const outputPath = await new HorizontalAnimationTextCreator().create(drawingText, option.fg, option.stroke)
         
         const result = await this.slackAction.uploadFile(drawingText, outputPath);
-        //console.log(result);
+        
+        this.urlOfLastSentGifFile = result.file?.url_private as string;
     }
 
     private extractOption(args: ArgsQueue) {
@@ -37,7 +44,7 @@ export class ScrollCmd implements ICommand{
         while (args.canPopArg() === true) {
             const arg = args.popArg();
             if (this.isOption(arg) === false)
-                throw new ArgumentException("Invalid Option Argument.");
+                throw new ArgumentException("無効な引数です。");
             switch (arg) {
                 case "-fg":
                     fg = args.popArg();
